@@ -1,0 +1,7 @@
+[package]
+name = "deino-cache"
+version = "0.1.0"
+authors = ["Fabricyo Barreto"]
+edition = "2024"
+
+[dependencies]
