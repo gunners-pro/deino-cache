@@ -1,5 +1,7 @@
 use std::{io::{BufReader, Read, Write}, net::TcpStream};
 
+use crate::command::{echo, ping};
+
 pub struct Connection {
     stream: TcpStream
 }
@@ -31,21 +33,12 @@ impl Connection {
             let command = command.trim();
 
             if command == "PING" {
-                (&self.stream)
-                    .write_all(b"+PONG\r\n")
-                    .unwrap();
-            }
-
-            if command.starts_with("ECHO") {
-                let parts: Vec<&str> =
-                    command.splitn(2, ' ').collect();
-
-                if let Some(message) = parts.get(1) {
-                    (&self.stream)
-                        .write_all(message.as_bytes())
-                        .unwrap();
+                (&self.stream).write_all(ping::execute()).unwrap();
+            } else if command.starts_with("ECHO") {
+                if let Some(message) = echo::execute(command) {
+                    (&self.stream).write_all(message.as_bytes()).unwrap();
                 }
-            }
+            }            
         }
     }
 }
