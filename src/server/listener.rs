@@ -1,11 +1,11 @@
-use std::{net::TcpListener};
+use std::{net::TcpListener, sync::{Arc, Mutex}};
 
-use crate::server::connection::Connection;
+use crate::{server::connection::Connection, store::Store};
 
 const HOST: &str = "127.0.0.1";
 const PORT: &str = "6379";
 
-pub fn run(){
+pub fn run(store: Arc<Mutex<Store>>){
     let listener = TcpListener::bind(format!("{}:{}", HOST, PORT))
         .expect("Failed to bind address");
 
@@ -16,7 +16,7 @@ pub fn run(){
             Ok(stream) => {
                 println!("Client connected!");
                 
-                let mut connection = Connection::new(stream);
+                let mut connection = Connection::new(stream, Arc::clone(&store));
                 connection.process();
             }
             Err(e) => {
